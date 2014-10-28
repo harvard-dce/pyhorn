@@ -131,3 +131,11 @@ Get the list of currently configured capture agents
     ncast001: idle
     ncast002: shutting_down
 
+License
+-------
+pyhorn is licensed under the Apache 2.0 license
+
+Copyright
+---------
+2014 President and Fellows of Harvard College
+

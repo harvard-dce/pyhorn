@@ -7,3 +7,13 @@ Release History
 ++++++++++++++++++
 
 * Birth!
+
+0.1.1 (2014-10-28)
+++++++++++++++++++
+
+* copyright tweak
+
+0.1.2 (2014-10-28)
+++++++++++++++++++
+
+* blerg. forgot to update history with last version bump.
