@@ -17,3 +17,9 @@ Release History
 ++++++++++++++++++
 
 * blerg. forgot to update history with last version bump.
+
+0.2.0 (2014-11-12)
+++++++++++++++++++
+
+* expanded endpoint methods and wrapper objects
+* better endpoint class test coverage and fixture/mocking approach
