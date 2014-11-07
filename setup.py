@@ -28,6 +28,7 @@ setup(
     long_description=readme + '\n\n' + history,
     install_requires=install_requires,
     tests_require=tests_require,
+    zip_safe=True,
     classifiers=(
         'Development Status :: 3 - Alpha',
         'Intended Audience :: Developers',
