@@ -1,7 +1,8 @@
-__author__ = 'jluker'
 
 from base import Endpoint, EndpointObj
 from episode import EpisodeEndpoint, Episode
+
+__all__ = ['UserTrackingEndpoint', 'UserAction']
 
 class UserTrackingEndpoint(Endpoint):
 
@@ -27,9 +28,6 @@ class UserTrackingEndpoint(Endpoint):
             return [actions]
         return actions
 
-class UserSession(EndpointObj):
-    pass
-
 class UserAction(EndpointObj):
 
     @property
@@ -38,8 +36,4 @@ class UserAction(EndpointObj):
                                    endpoint_params={'episode_id': self.mediapackageId},
                                    class_=Episode, single=True)
 
-    @property
-    def session(self):
-        return self._ref_property("session", path_key="sessionId",
-                                  class_=UserSession, single=True)
 

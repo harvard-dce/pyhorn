@@ -1,4 +1,8 @@
-__author__ = 'jluker'
+"""
+pyhorn.endpoints.base
+~~~~~~~~~~~~~~
+base classes for endpoint and object wrapper classes
+"""
 
 class Endpoint(object):
 
@@ -36,14 +40,25 @@ class EndpointObj(object):
         self._property_stash = {}
         self.client = client
 
-    def _get_raw(self, path_key):
+    @property
+    def url(self):
+        raise NotImplementedError
+
+    def raw_get(self, path_key, default=None):
+        """
+        Get any value from the raw data, or None if not found
+        :param path_key: path into the raw data structure using dot notation.
+                          For example, "foo.bar.baz" would look for
+                          self._raw['foo']['bar']['baz']
+        :return: whatever is found at the specified path or None
+        """
         path_parts = path_key.split('.')
-        data = self._raw[path_parts.pop(0)]
+        pointer = self._raw
         for key in path_parts:
-            if key not in data:
-                return None
-            data = data[key]
-        return data
+            if key not in pointer:
+                return default
+            pointer = pointer[key]
+        return pointer
 
     def _ref_property(self, name, endpoint_method=None, endpoint_params=None,
                           path_key=None, class_=None, single=False):
@@ -53,7 +68,7 @@ class EndpointObj(object):
         if endpoint_method is not None:
             items = endpoint_method(self.client, **endpoint_params)
         elif path_key is not None:
-            items = self._get_raw(path_key)
+            items = self.raw_get(path_key)
 
         if items is None:
             items = []
@@ -75,15 +90,6 @@ class EndpointObj(object):
         if attribute in self._raw:
             return self._raw[attribute]
 
-        # if attribute in self._ref_map:
-        #     (method, source_attr, param_name) = self._ref_map[attribute]
-        #     param_map = { param_name: getattr(self, source_attr) }
-        #     referent = method(self.client, **param_map)
-        #     setattr(self, attribute, referent)
-        #     return referent
-
-        print "got here with attribute: %s" % attribute
         raise AttributeError("response data for %r has no key %r" %
                               (self.__class__, attribute))
-
 

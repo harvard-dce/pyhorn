@@ -1,6 +1,7 @@
-__author__ = 'jluker'
 
 from base import Endpoint
+
+__all__ = ['InfoEndpoint']
 
 class InfoEndpoint(Endpoint):
 

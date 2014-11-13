@@ -131,6 +131,84 @@ Get the list of currently configured capture agents
     ncast001: idle
     ncast002: shutting_down
 
+Endpoint Object Wrappers
+------------------------
+
+pyhorn attempts to make the Matterhorn API responses more convenient to work with
+by wrapping the json response data in a set of classes that provide easy access
+via object attributes and automatic "dereferencing" of associated data.
+
+The following endpoint data wrappers are defined:
+
+* Workflow
+* WorkflowOperation
+* ServiceJob
+* Episode
+* Mediapackage
+* MediaTrack
+* CaptureAgent
+* UserAction
+
+These are just the initial set because they represent the data I needed to deal
+with in the other projects that prompted the creation of pyhorn. It is trivial
+to add additional wrapper classes. Pull requests welcome!
+
+**Attribute access**
+
+Endpoint data classes inherit from ``pyhorn.endpoints.base.EndpointObj``. The
+json response data is stored in a ``_raw`` attribute and made accessible via
+dot-notation by overriding ``__getattr__``. A simple illustration:
+
+.. code-block:: python
+
+    >>> from pyhorn.endpoints.base import EndpointObj
+    >>> obj = EndpointObj({"foo": "bar", "baz": [1,2,3]}, client)
+    >>> obj.foo
+    bar
+    >>> obj.baz
+    [1, 2, 3]
+    >>> obj.abc
+    Traceback ...
+    ...
+    AttributeError: response data for <class 'pyhorn.endpoints.base.EndpointObj'> has no key 'abc'
+
+At this point the dot-notation access only works for top-level values. There is a ``EndpointObj.raw_get`` method
+that accepts a ``path_key`` argument if you need to access something deeper in the response
+structure.
+
+.. code-block:: python
+
+    >>> obj = EndpointObj({"foo": {"bar": {"baz": 1}}})
+    >>> obj.raw_get("foo.bar.baz")
+    1
+
+**Dereferencing**
+
+In a handful of cases accessing certain attributes (``@property``s, actually)
+of an endpoint data wrapper object
+will return an instance or instances of a different wrapper class. For example,
+``Workflow.operations`` will extract the operation data from the raw json and
+return a list of ``WorkflowOperation`` objects that wrap the individual operation
+data structures contained in the original response.
+
+This works also for dereferencing data that requires an additional request to the
+Matterhorn API. For instance, Accessing the ``WorkflowOperation.job`` property
+triggers a request to the ``/services/job/{job_id}.json``, with the response
+being wrapped in a ``ServiceJob`` object, cached (of course) and returned.
+
+The current list of these dereferencing relationships is:
+
+* ``Workflow.operations`` -> list of ``WorkflowOperation`` objects
+* ``Workflow.job`` -> ``ServiceJob``
+* ``Workflow.episode`` -> ``Episode``
+* ``Workflow.mediapackage`` -> ``Mediapackage``
+* ``WorkflowOperation.job`` -> ``ServiceJob``
+* ``ServiceJob.parent`` -> ``ServiceJob``
+* ``ServiceJob.children`` -> list of ``ServiceJob`` objects
+* ``Episode.mediapackage`` -> ``Mediapackage``
+* ``Mediapackage.tracks`` -> list of ``MediaTrack`` objects
+* ``UserAction.episode`` -> ``Episode``
+
 License
 -------
 pyhorn is licensed under the Apache 2.0 license

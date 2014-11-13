@@ -1,4 +1,3 @@
-__author__ = 'jluker'
-__version__ = '0.1.2'
+__version__ = '0.2.0'
 
 from client import MHClient

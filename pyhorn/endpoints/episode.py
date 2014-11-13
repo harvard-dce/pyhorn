@@ -1,6 +1,9 @@
-__author__ = 'jluker'
 
 from base import Endpoint, EndpointObj
+from urlparse import urljoin
+from urllib import quote
+
+__all__ = ['EpisodeEndpoint', 'Episode', 'Mediapackage', 'MediaTrack']
 
 class EpisodeEndpoint(Endpoint):
 
@@ -40,12 +43,31 @@ class EpisodeEndpoint(Endpoint):
             return None
         return ep_search[0]
 
-class Mediapackage(EndpointObj):
+class MediaTrack(EndpointObj):
     pass
 
+class Mediapackage(EndpointObj):
+
+    def __repr__(self):
+        return "Mediapackage %s" % self.id
+
+    @property
+    def tracks(self):
+        return self._ref_property('tracks', path_key="media.track",
+                                   class_=MediaTrack)
+
 class Episode(EndpointObj):
+
+    def __repr__(self):
+        return "Episode %s" % self.id
+
+    @property
+    def url(self):
+        return urljoin(self.client.base_url,
+                        "episode/episode.json?id=%s" % quote(self.id))
 
     @property
     def mediapackage(self):
         return self._ref_property('mediapackage', path_key='mediapackage',
                                        class_=Mediapackage, single=True)
+

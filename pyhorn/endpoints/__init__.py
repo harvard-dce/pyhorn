@@ -1,7 +1,7 @@
-__author__ = 'jluker'
 
-from info import InfoEndpoint
-from usertracking import UserTrackingEndpoint, UserAction
-from workflow import WorkflowEndpoint, Workflow
-from episode import EpisodeEndpoint, Episode
-from capture import CaptureEndpoint, CaptureAgent
+from info import *
+from usertracking import *
+from workflow import *
+from episode import *
+from capture import *
+from services import *

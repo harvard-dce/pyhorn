@@ -1,2 +1,1 @@
 include LICENSE README.rst HISTORY.rst requirements.txt
-recursive-include tests *.json

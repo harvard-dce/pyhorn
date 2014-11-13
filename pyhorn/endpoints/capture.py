@@ -1,6 +1,9 @@
-__author__ = 'jluker'
 
 from base import Endpoint, EndpointObj
+from urlparse import urljoin
+from urllib import quote
+
+__all__ = ['CaptureEndpoint', 'CaptureAgent']
 
 class CaptureEndpoint(Endpoint):
 
@@ -24,6 +27,14 @@ class CaptureEndpoint(Endpoint):
 
 
 class CaptureAgent(EndpointObj):
+
+    def __repr__(self):
+        return "Capture Agent %s" % self.name
+
+    @property
+    def url(self):
+        return urljoin(self.client.base_url,
+                        "capture-admin/agents/%s.json" % quote(self.name))
 
     @property
     def capabilities(self):

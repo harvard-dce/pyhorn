@@ -1,17 +1,19 @@
-__author__ = 'jluker'
+"""
+pyhorn.client
+~~~~~~~~~~~~~~
+Defines the main API client class
+"""
 
 import os
 import sys
 import requests
 from requests.auth import HTTPDigestAuth
-from urlparse import urljoin
 from endpoints import *
-
-_auth_headers = {'X-REQUESTED-AUTH': 'Digest',
-                 'X-Opencast-Matterhorn-Authorization': 'true'}
+from urlparse import urljoin
+from utils import default_headers
 
 _cache_type = 'memory'
-if not os.environ.get('TESTING', False):
+if not os.environ.get('TESTING'):
     import requests_cache
     requests_cache.install_cache(backend=_cache_type)
 
@@ -44,6 +46,7 @@ class MHClient(object):
         self.base_url = base_url
         self.user = user
         self.passwd = passwd
+        self.default_headers = default_headers()
 
     @handle_http_exceptions()
     def endpoints(self):
@@ -96,8 +99,19 @@ class MHClient(object):
         agent_ = CaptureEndpoint.agent(self, agent_name)
         return CaptureAgent(agent_, self)
 
-    def get(self, path, params={}, headers={}):
-        headers.update(_auth_headers)
+    @handle_http_exceptions()
+    def hosts(self):
+        hosts_ = ServicesEndpoint.hosts(self)
+        return [ServiceHost(x, self) for x in hosts_]
+
+    @handle_http_exceptions()
+    def job(self, job_id):
+        job_ = ServicesEndpoint.job(self, job_id)
+        return ServiceJob(job_, self)
+
+    def get(self, path, params={}, extra_headers={}):
+        headers = self.default_headers.copy()
+        headers.update(extra_headers)
         url = urljoin(self.base_url, path)
         auth = HTTPDigestAuth(self.user, self.passwd)
         resp = _session.get(url, params=params, headers=headers, auth=auth)

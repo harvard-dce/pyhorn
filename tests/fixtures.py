@@ -1,22 +1,15 @@
-__author__ = 'jluker'
-
 import os
-from httmock import all_requests
+from httmock import all_requests, urlmatch
 
-class JsonFixture:
+base_path = os.path.join(os.path.dirname(__file__), 'fixtures')
 
-    def __init__(self, path):
-        self.path = path
+def json_fixture(path_match=None, response_data={}, status_code=200):
 
-    def get(self):
-        base_path = os.path.dirname(__file__)
-        abs_path = os.path.join(base_path, 'endpoints', self.path[1:])
-        with open(abs_path, 'r') as f:
-            content = f.read()
-        return content
+    def fixture_response(url, req):
+        return {'status_code': status_code,
+                 'content': response_data,
+                 'headers': {'content-type': 'application/json'}}
+    if path_match is None:
+        return all_requests(fixture_response)
+    return urlmatch(path=path_match)(fixture_response)
 
-@all_requests
-def fixture_response(url, request):
-    return {'status_code': 200,
-             'content': JsonFixture(url.path).get(),
-             'headers': {'content-type': 'application/json'} }
