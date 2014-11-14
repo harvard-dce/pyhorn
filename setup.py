@@ -20,7 +20,7 @@ setup(
     name='pyhorn',
     version=version,
     packages=find_packages(exclude=["docs", "tests*"]),
-    url='https://bitbucket.org/lbjay/pyhorn',
+    url='https://github.com/harvard-dce/pyhorn',
     license='Apache 2.0',
     author='Jay Luker',
     author_email='lbjay@reallywow.com',

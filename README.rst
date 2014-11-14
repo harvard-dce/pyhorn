@@ -2,7 +2,8 @@
 pyhorn
 ======
 
-pyhorn is a python client that wraps the `Opencast Matterhorn <http://opencast.org/matterhorn/>`_
+pyhorn is a python client for accessing the RESTful API of the
+`Opencast Matterhorn <http://opencast.org/matterhorn/>`_
 video capture system. It provides a client interface, **MHClient**, that exposes methods
 for accessing both raw and 'objectified' response data from the various Matterhorn
 REST API endpoints.
@@ -28,7 +29,7 @@ The ``operations`` attribute of those objects will get you a list of
 
 Currently there are only a handfull of endpoints wrapped in this way, and only a
 few convenience classes and methods defined for each one. The idea is to continue
-adding more as I (or you) need them. Patches welcome!
+adding more as I (or you) need them. Pull requests welcome!
 
 MHClient Method List
 --------------------
@@ -46,6 +47,8 @@ entry in the REST API docs at http://matterhorn.example.edu/docs.html?path=/work
 * ``user_actions(**kwargs)`` - /usertracking/actions.json
 * ``agents()`` - /capture-admin/agents.json
 * ``agent(agent_name)`` - /capture-admin/agents/{agent_name}.json
+* ``hosts()`` - /services/hosts.json
+* ``job(job_id)`` - /services/job/{job_id}.json
 
 Example Usage
 -------------
@@ -138,7 +141,7 @@ pyhorn attempts to make the Matterhorn API responses more convenient to work wit
 by wrapping the json response data in a set of classes that provide easy access
 via object attributes and automatic "dereferencing" of associated data.
 
-The following endpoint data wrappers are defined:
+The following endpoint data classes are defined:
 
 * Workflow
 * WorkflowOperation
@@ -184,7 +187,7 @@ structure.
 
 **Dereferencing**
 
-In a handful of cases accessing certain attributes (``@property``s, actually)
+In a handful of cases accessing certain attributes (``@property``, actually)
 of an endpoint data wrapper object
 will return an instance or instances of a different wrapper class. For example,
 ``Workflow.operations`` will extract the operation data from the raw json and
