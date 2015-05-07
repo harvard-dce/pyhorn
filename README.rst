@@ -42,13 +42,15 @@ entry in the REST API docs at http://matterhorn.example.edu/docs.html?path=/work
 * ``me()`` - /info/me.json
 * ``workflows(**kwargs)`` - /workflow/instances.json
 * ``workflow(instance_id)`` - /workflow/instance/{id}.json
-* ``episodes(**kwargs))`` - /episode/episode.json
+* ``episodes(**kwargs)`` - /episode/episode.json
 * ``episode(episode_id)`` - /episode/episode.json
 * ``user_actions(**kwargs)`` - /usertracking/actions.json
 * ``agents()`` - /capture-admin/agents.json
 * ``agent(agent_name)`` - /capture-admin/agents/{agent_name}.json
 * ``hosts()`` - /services/hosts.json
 * ``job(job_id)`` - /services/job/{job_id}.json
+* ``search_episodes(**kwargs)`` - /search/episode.json
+* ``search_episode(episode_id)`` - /search/episode.json
 
 Example Usage
 -------------
@@ -151,6 +153,7 @@ The following endpoint data classes are defined:
 * MediaTrack
 * CaptureAgent
 * UserAction
+* Search
 
 These are just the initial set because they represent the data I needed to deal
 with in the other projects that prompted the creation of pyhorn. It is trivial
@@ -210,7 +213,7 @@ The current list of these dereferencing relationships is:
 * ``ServiceJob.children`` -> list of ``ServiceJob`` objects
 * ``Episode.mediapackage`` -> ``Mediapackage``
 * ``Mediapackage.tracks`` -> list of ``MediaTrack`` objects
-* ``UserAction.episode`` -> ``Episode``
+* ``UserAction.episode`` -> ``SearchEpisode``
 
 License
 -------

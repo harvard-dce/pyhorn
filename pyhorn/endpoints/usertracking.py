@@ -1,6 +1,6 @@
 
 from base import Endpoint, EndpointObj
-from episode import EpisodeEndpoint, Episode
+from search import SearchEndpoint, SearchEpisode
 
 __all__ = ['UserTrackingEndpoint', 'UserAction']
 
@@ -32,8 +32,8 @@ class UserAction(EndpointObj):
 
     @property
     def episode(self):
-        return self._ref_property("episode", endpoint_method=EpisodeEndpoint.episode,
+        return self._ref_property("episode", endpoint_method=SearchEndpoint.episode,
                                    endpoint_params={'episode_id': self.mediapackageId},
-                                   class_=Episode, single=True)
+                                   class_=SearchEpisode, single=True)
 
 

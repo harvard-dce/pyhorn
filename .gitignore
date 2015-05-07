@@ -2,6 +2,7 @@
 
 # Packages
 *.egg
+*.eggs
 *.egg-info
 dist
 build
@@ -18,16 +19,5 @@ pip-log.txt
 
 # Mac specific files
 .DS_Store
-
-#eclipse files
-.project
-.pydevproject
-.settings
-
-#pycharm
-.idea
-
-#pyenv
-.python-version
 
 tmp

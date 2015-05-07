@@ -314,7 +314,7 @@ class TestUserTracking(EndpointTestCase):
 
     def test_action_episode(self):
 
-        ep_data = json_fixture(r'/episode/', {
+        ep_data = json_fixture(r'/search/', {
             "search-results": {
                 "result": [
                     { "id": "abcd-1234" },

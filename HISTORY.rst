@@ -23,3 +23,12 @@ Release History
 
 * expanded endpoint methods and wrapper objects
 * better endpoint class test coverage and fixture/mocking approach
+
+0.3.0 (2015-05-07)
+++++++++++++++++++
+
+UserAction.episode now fetches from SearchEndpoint
+
+* new SearchEndpoint for fetching episode data
+* new client methods: search_episodes(), search_episode()
+
