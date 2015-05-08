@@ -90,6 +90,16 @@ class MHClient(object):
         return Episode(ep, self)
 
     @handle_http_exceptions()
+    def search_episodes(self, **kwargs):
+        eps = SearchEndpoint.episodes(self, **kwargs)
+        return [SearchEpisode(x, self) for x in eps]
+
+    @handle_http_exceptions()
+    def search_episode(self, episode_id):
+        ep = SearchEndpoint.episode(self, episode_id)
+        return SearchEpisode(ep, self)
+
+    @handle_http_exceptions()
     def agents(self):
         agents_ = CaptureEndpoint.agents(self)
         return [CaptureAgent(x, self) for x in agents_]
