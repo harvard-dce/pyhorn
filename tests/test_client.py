@@ -1,12 +1,13 @@
 import sys
+
 if sys.version_info < (2,7):
     import unittest2 as unittest
 else:
     import unittest
 
 from urlparse import urlparse, parse_qs
-from pyhorn import client, MHClient
-from httmock import all_requests, urlmatch, HTTMock
+from pyhorn import MHClient, MHClientHTTPError
+from httmock import all_requests, HTTMock
 
 class TestClient(unittest.TestCase):
 
@@ -35,3 +36,19 @@ class TestClient(unittest.TestCase):
             url_params = parse_qs(url_parts.query)
             self.assertEqual(url_parts.path, '/foo')
             self.assertEqual(url_params['bar'], ['baz'])
+
+    def test_404_handling(self):
+        @all_requests
+        def resp_404(url, request):
+            return {'status_code': 404}
+        c = MHClient('http://matterhorn.example.edu', 'user', 'passwd')
+        with HTTMock(resp_404):
+            self.assertRaises(MHClientHTTPError, c.me)
+
+    def test_401_handling(self):
+        @all_requests
+        def resp_401(url, request):
+            return {'status_code': 401}
+        c = MHClient('http://matterhorn.example.edu', 'user', 'passwd')
+        with HTTMock(resp_401):
+            self.assertRaises(MHClientHTTPError, c.me)

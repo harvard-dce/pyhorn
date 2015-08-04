@@ -32,3 +32,7 @@ UserAction.episode now fetches from SearchEndpoint
 * new SearchEndpoint for fetching episode data
 * new client methods: search_episodes(), search_episode()
 
+0.3.1 (2015-08-04)
+++++++++++++++++++
+
+bug fix in client http exception handling

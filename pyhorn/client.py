@@ -5,7 +5,6 @@ Defines the main API client class
 """
 
 import os
-import sys
 import requests
 from requests.auth import HTTPDigestAuth
 from endpoints import *
@@ -19,6 +18,9 @@ if not os.environ.get('TESTING'):
 
 _session = requests.Session()
 
+class MHClientHTTPError(Exception):
+    pass
+
 def handle_http_exceptions(callbacks={}):
     def wrapper(f):
         def newfunc(*args, **kwargs):
@@ -26,13 +28,13 @@ def handle_http_exceptions(callbacks={}):
                 return f(*args, **kwargs)
             except requests.HTTPError, e:
                 resp = e.response
-                req = e.request
+                req = resp.request
                 if resp.status_code == 404:
-                    print >>sys.stderr, \
-                        "Endpoint not found at %s. " % req.url \
-                        + "Perhaps it is not available on this node?"
+                    raise MHClientHTTPError(
+                        "Endpoint not found at %s. " % req.url,
+                        "Perhaps it is not available on this node?")
                 elif resp.status_code == 401:
-                    print >>sys.stderr, "Access denied: %s" % e
+                    raise MHClientHTTPError("Access denied: %s" % e)
                 else:
                     for code, handler in callbacks.items():
                         if resp.status_code == code:
