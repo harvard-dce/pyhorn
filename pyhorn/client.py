@@ -12,8 +12,8 @@ from urlparse import urljoin
 from utils import default_headers
 
 _cache_type = 'memory'
+import requests_cache
 if not os.environ.get('TESTING'):
-    import requests_cache
     requests_cache.install_cache(backend=_cache_type)
 
 _session = requests.Session()
@@ -121,13 +121,36 @@ class MHClient(object):
         job_ = ServicesEndpoint.job(self, job_id)
         return ServiceJob(job_, self)
 
-    def get(self, path, params={}, extra_headers={}):
+    @handle_http_exceptions()
+    def statistics(self):
+        statistics_ = ServicesEndpoint.statistics(self)
+        return ServiceStatistics(statistics_, self)
+
+    def get(self, path, params=None, extra_headers=None):
         headers = self.default_headers.copy()
-        headers.update(extra_headers)
+
+        if extra_headers is not None:
+            headers.update(extra_headers)
+
         url = urljoin(self.base_url, path)
         auth = HTTPDigestAuth(self.user, self.passwd)
         resp = _session.get(url, params=params, headers=headers, auth=auth)
         resp.raise_for_status()
         return resp.json()
 
+    def post(self, path, data=None, extra_headers=None):
+        headers = self.default_headers.copy()
 
+        if extra_headers is not None:
+            headers.update(extra_headers)
+
+        url = urljoin(self.base_url, path)
+        auth = HTTPDigestAuth(self.user, self.passwd)
+        resp = _session.post(url, data=data, headers=headers, auth=auth)
+        resp.raise_for_status()
+
+        # maybe we changed something so clear the cache
+        if hasattr(requests.Session(), 'cache'):
+            requests_cache.clear()
+
+        return resp

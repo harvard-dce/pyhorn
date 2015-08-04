@@ -36,3 +36,16 @@ UserAction.episode now fetches from SearchEndpoint
 ++++++++++++++++++
 
 bug fix in client http exception handling
+
+0.4.0 (2015-08-18)
+++++++++++++++++++
+
+Additional services endpoint methods
+
+* basic service listing and statistics
+* methods for getting count of queued/running jobs
+* maintenance on/off
+
+Added request timeouts
+
+Unhandled http exceptions are now re-raised

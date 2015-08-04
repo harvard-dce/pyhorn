@@ -1,5 +1,7 @@
 
 import os
+import requests_cache
+
 os.environ['TESTING'] = 'True'
 
 import sys
@@ -8,10 +10,12 @@ if sys.version_info < (2,7):
 else:
     import unittest
 
+import requests
 from pyhorn import MHClient
 from pyhorn.endpoints import *
 from pyhorn.endpoints.base import *
-from httmock import HTTMock
+from httmock import urlmatch, HTTMock
+from mock import patch, Mock
 from fixtures import json_fixture
 
 class EndpointTestCase(unittest.TestCase):
@@ -435,3 +439,128 @@ class TestCaptureAgents(EndpointTestCase):
 
         caps = ca.capabilities
         self.assertEqual(caps['foo'], 1)
+
+
+class TestServices(EndpointTestCase):
+
+    def test_statistics(self):
+
+        stat_data = json_fixture(response_data={
+            "statistics": {
+                "service": [
+                    { "queued": "0" },
+                    { "queued": "1" }
+                ]
+            }
+        })
+
+        with HTTMock(stat_data):
+            stats = ServicesEndpoint.statistics(self.c)
+            self.assertTrue(isinstance(stats, dict))
+            stats_obj = self.c.statistics()
+            self.assertTrue(isinstance(stats_obj, ServiceStatistics))
+
+    def test_statistics_obj(self):
+        stats_obj = ServiceStatistics({
+            'statistics': {
+                'service': [
+                    {
+                        'queued': 0,
+                        'running': 1,
+                        'serviceRegistration': {
+                            'type': 'foo',
+                            'host': 'http://foo'
+                        }
+                    },
+                    {
+                        'queued': 0,
+                        'running': 1,
+                        'serviceRegistration': {
+                            'type': 'fud',
+                            'host': 'http://foo'
+                        }
+                    },
+                    {
+                        'queued': 1,
+                        'running': 2,
+                        'serviceRegistration': {
+                            'type': 'bar',
+                            'host': 'http://bar'
+                        }
+                    },
+                    {
+                        'queued': 0,
+                        'running': 0,
+                        'serviceRegistration': {
+                            'type': 'baz',
+                            'host': 'http://baz'
+                        }
+                    },
+                    {
+                        'queued': 1,
+                        'running': 1,
+                        'serviceRegistration': {
+                            'type': 'baz',
+                            'host': 'http://baz'
+                        }
+                    }
+                ]
+            }
+        }, self.c)
+        self.assertTrue(isinstance(stats_obj.services, list))
+        self.assertTrue(isinstance(stats_obj.services[0], ServiceStatEntry))
+        self.assertTrue(isinstance(stats_obj.services[0].registration, ServiceRegistration))
+        self.assertEqual(stats_obj.services[0].type, 'foo')
+        self.assertEqual(stats_obj.running_jobs(), 5)
+        self.assertEqual(stats_obj.queued_jobs(), 2)
+        self.assertEqual(stats_obj.running_jobs(type='bar'), 2)
+        self.assertEqual(stats_obj.running_jobs(type='baz'), 1)
+        self.assertEqual(stats_obj.running_jobs(type='blergh'), 0)
+        self.assertEqual(stats_obj.queued_jobs(type='baz'), 1)
+        self.assertEqual(stats_obj.queued_jobs(host='http://bar'), 1)
+        self.assertEqual(stats_obj.running_jobs(host='http://foo'), 2)
+        self.assertEqual(stats_obj.running_jobs(type='foo', host='http://foo'), 1)
+
+    def test_services(self):
+
+        stat_data = json_fixture(response_data={
+            "services": {
+                "service": [
+                    { "type": "foo" },
+                    { "type": "bar" }
+                ]
+            }
+        })
+
+        with HTTMock(stat_data):
+            services = ServicesEndpoint.services(self.c)
+            self.assertTrue(isinstance(services, list))
+
+    def test_service_host(self):
+        services_data = json_fixture(response_data={
+            'services': {
+                'service': [
+                    { "type": "foo", "host": "http://foo.example.edu" },
+                    { "type": "bar", "host": "http://foo.example.edu" }
+                ]
+            }
+        })
+        host = ServiceHost({ 'base_url': 'http://foo.example.edu' }, self.c)
+        with HTTMock(services_data):
+            self.assertEqual(len(host.services), 2)
+            self.assertEqual(host.services[0].type, "foo")
+
+    @patch.object(requests.Session, 'post', autospec=True)
+    @patch.object(requests_cache, 'clear')
+    def test_service_host_maintenance(self, mock_clear, mock_post):
+
+        host = ServiceHost({ 'base_url': 'http://foo.example.edu' }, self.c)
+
+        host.set_maintenance(True)
+        call_args, call_kwargs = mock_post.call_args
+        self.assertEqual(call_args[1], 'http://matterhorn.example.edu/services/maintenance')
+        self.assertEqual(call_kwargs['data'], {'host': 'http://foo.example.edu', 'maintenance': True})
+
+        host.set_maintenance(False)
+        call_args, call_kwargs = mock_post.call_args
+        self.assertEqual(call_kwargs['data'], {'host': 'http://foo.example.edu', 'maintenance': False})

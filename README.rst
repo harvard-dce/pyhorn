@@ -51,6 +51,7 @@ entry in the REST API docs at http://matterhorn.example.edu/docs.html?path=/work
 * ``job(job_id)`` - /services/job/{job_id}.json
 * ``search_episodes(**kwargs)`` - /search/episode.json
 * ``search_episode(episode_id)`` - /search/episode.json
+* ``statistics()`` - /services/statistics.json
 
 Example Usage
 -------------
@@ -60,6 +61,13 @@ Create the client interface...
 
     >>> from pyhorn import MHClient
     >>> client = MHClient('http://matterhorn.example.edu', 'user', 'passwd')
+
+
+User/pass combo should be for your REST API user, typically the
+"matterhorn_system_account" user.
+
+The default request timeout is 5 seconds. Pass `timeout=n` to the MHClient
+constructor to use something else.
 
 Get a list of available endpoints...
 
@@ -215,6 +223,17 @@ The current list of these dereferencing relationships is:
 * ``Mediapackage.tracks`` -> list of ``MediaTrack`` objects
 * ``UserAction.episode`` -> ``SearchEpisode``
 
+**Setting Maintenance Mode**
+
+As of v0.4.0 you can toggle the maintenance mode on a host.
+
+.. code-block:: python
+
+    >>> hosts = client.hosts()
+    >>> for host in hosts:
+            host.set_maintenance(True)
+
+
 Testing
 -------
 
@@ -238,5 +257,5 @@ pyhorn is licensed under the Apache 2.0 license
 
 Copyright
 ---------
-2014 President and Fellows of Harvard College
+2015 President and Fellows of Harvard College
 

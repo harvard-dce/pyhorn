@@ -2,11 +2,23 @@
 from base import Endpoint, EndpointObj
 from urlparse import urljoin
 
-__all__ = ['ServicesEndpoint', 'ServiceJob', 'ServiceHost']
+__all__ = ['ServicesEndpoint', 'ServiceJob', 'ServiceHost',
+           'ServiceStatistics', 'ServiceRegistration', 'ServiceStatEntry']
+
 
 class ServicesEndpoint(Endpoint):
 
-    _kwarg_map = {}
+    _kwarg_map = {
+        'services': {
+            'serviceType': None,
+            'host': None
+        }
+    }
+
+    @classmethod
+    def statistics(cls, client):
+        resp_data = client.get('/services/statistics.json')
+        return resp_data
 
     @classmethod
     def hosts(cls, client):
@@ -17,6 +29,17 @@ class ServicesEndpoint(Endpoint):
         if isinstance(hosts, dict):
             return [hosts]
         return hosts
+
+    @classmethod
+    def services(cls, client, **kwargs):
+        params = cls.map_kwargs_to_params('services', kwargs)
+        resp_data = client.get('/services/services.json', params)
+        if 'service' not in resp_data['services']:
+            return []
+        services = resp_data['services']['service']
+        if isinstance(services, dict):
+            return [services]
+        return services
 
     @classmethod
     def job(cls, client, job_id):
@@ -33,8 +56,59 @@ class ServicesEndpoint(Endpoint):
             return [children_]
         return children_
 
-class ServiceHost(EndpointObj):
+
+class ServiceStatistics(EndpointObj):
+
+    @property
+    def services(self):
+        return self._ref_property('services', path_key='statistics.service',
+                                  class_=ServiceStatEntry)
+
+    def filtered_services(self, host=None, type=None):
+        def _filter(s):
+            if host is not None and s.registration.host != host:
+                return False
+            if type is not None and s.registration.type != type:
+                return False
+            return True
+        return filter(_filter, self.services)
+
+    def running_jobs(self, host=None, type=None):
+        services = self.filtered_services(host, type)
+        return sum(int(x.running) for x in services)
+
+    def queued_jobs(self, host=None, type=None):
+        services = self.filtered_services(host, type)
+        return sum(int(x.queued) for x in services)
+
+
+class ServiceStatEntry(EndpointObj):
+
+    @property
+    def registration(self):
+        return self._ref_property('registration', path_key='serviceRegistration',
+                                  class_=ServiceRegistration, single=True)
+
+    @property
+    def type(self):
+        return self.registration.type
+
+class ServiceRegistration(EndpointObj):
     pass
+
+class ServiceHost(EndpointObj):
+
+    @property
+    def services(self):
+        return self._ref_property('services', endpoint_method=ServicesEndpoint.services,
+                                  endpoint_params={'host': self._raw['base_url']},
+                                  class_=ServiceRegistration)
+
+    def set_maintenance(self, state):
+        self.client.post('/services/maintenance', data={
+                             'host': self.base_url,
+                             'maintenance': state
+                         })
 
 class ServiceJob(EndpointObj):
 

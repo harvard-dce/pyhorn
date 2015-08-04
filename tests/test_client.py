@@ -1,4 +1,5 @@
 import sys
+import requests_cache
 
 if sys.version_info < (2,7):
     import unittest2 as unittest
@@ -8,6 +9,7 @@ else:
 from urlparse import urlparse, parse_qs
 from pyhorn import MHClient, MHClientHTTPError
 from httmock import all_requests, HTTMock
+from mock import patch
 
 class TestClient(unittest.TestCase):
 
@@ -36,6 +38,27 @@ class TestClient(unittest.TestCase):
             url_params = parse_qs(url_parts.query)
             self.assertEqual(url_parts.path, '/foo')
             self.assertEqual(url_params['bar'], ['baz'])
+
+    @patch.object(requests_cache, 'clear')
+    def test_post(self, mock_clear):
+        @all_requests
+        def resp_content(url, request):
+            return {'status_code': 200,
+                    'content': {
+                        'req_url': request.url,
+                        'req_body': request.body,
+                        'req_method': request.method
+                    }}
+        c = MHClient('http://matterhorn.example.edu', 'user', 'passwd')
+        with HTTMock(resp_content):
+            resp = c.post('/bar/baz', data={'foo': 1, 'fud': False})
+
+        resp_data = resp.json()
+        self.assertEqual(resp_data['req_url'], 'http://matterhorn.example.edu/bar/baz')
+        self.assertEqual(resp_data['req_method'], 'POST')
+        self.assertTrue('fud=False' in resp_data['req_body'])
+        self.assertTrue('foo=1' in resp_data['req_body'])
+        self.assertTrue(mock_clear.called)
 
     def test_404_handling(self):
         @all_requests
