@@ -215,6 +215,19 @@ The current list of these dereferencing relationships is:
 * ``Mediapackage.tracks`` -> list of ``MediaTrack`` objects
 * ``UserAction.episode`` -> ``SearchEpisode``
 
+Testing
+-------
+
+During development pyhorn tests are executed using [pytest](https://pytest.org/latest/contents.html).
+
+To run the tests from a local git clone:
+
+`pip install -r tests/requirements.txt`
+
+then
+
+`python setup.py test`
+
 License
 -------
 pyhorn is licensed under the Apache 2.0 license
