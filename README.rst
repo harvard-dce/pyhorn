@@ -218,15 +218,19 @@ The current list of these dereferencing relationships is:
 Testing
 -------
 
-During development pyhorn tests are executed using [pytest](https://pytest.org/latest/contents.html).
+During development pyhorn tests are executed using `pytest <https://pytest.org/latest/contents.html>`_.
 
 To run the tests from a local git clone:
 
-`pip install -r tests/requirements.txt`
+.. code-block:: bash
+
+    pip install -r tests/requirements.txt
 
 then
 
-`python setup.py test`
+.. code-block:: bash
+
+    python setup.py test
 
 License
 -------
