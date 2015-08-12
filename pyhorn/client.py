@@ -16,6 +16,7 @@ import requests_cache
 if not os.environ.get('TESTING'):
     requests_cache.install_cache(backend=_cache_type)
 
+_default_timeout = 5
 _session = requests.Session()
 
 class MHClientHTTPError(Exception):
@@ -44,10 +45,11 @@ def handle_http_exceptions(callbacks={}):
 
 class MHClient(object):
 
-    def __init__(self, base_url, user, passwd):
+    def __init__(self, base_url, user, passwd, timeout=None):
         self.base_url = base_url
         self.user = user
         self.passwd = passwd
+        self.timeout = timeout or _default_timeout
         self.default_headers = default_headers()
 
     @handle_http_exceptions()
@@ -134,7 +136,12 @@ class MHClient(object):
 
         url = urljoin(self.base_url, path)
         auth = HTTPDigestAuth(self.user, self.passwd)
-        resp = _session.get(url, params=params, headers=headers, auth=auth)
+        resp = _session.get(url,
+                            params=params,
+                            headers=headers,
+                            auth=auth,
+                            timeout=self.timeout
+                            )
         resp.raise_for_status()
         return resp.json()
 
@@ -146,7 +153,12 @@ class MHClient(object):
 
         url = urljoin(self.base_url, path)
         auth = HTTPDigestAuth(self.user, self.passwd)
-        resp = _session.post(url, data=data, headers=headers, auth=auth)
+        resp = _session.post(url,
+                             data=data,
+                             headers=headers,
+                             auth=auth,
+                             timeout=self.timeout
+                             )
         resp.raise_for_status()
 
         # maybe we changed something so clear the cache
