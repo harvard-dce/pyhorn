@@ -36,10 +36,10 @@ def handle_http_exceptions(callbacks={}):
                         "Perhaps it is not available on this node?")
                 elif resp.status_code == 401:
                     raise MHClientHTTPError("Access denied: %s" % e)
+                elif resp.status_code in callbacks:
+                    callbacks[resp.status_code](e)
                 else:
-                    for code, handler in callbacks.items():
-                        if resp.status_code == code:
-                            handler(e)
+                    raise
         return newfunc
     return wrapper
 
