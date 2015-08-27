@@ -37,7 +37,7 @@ UserAction.episode now fetches from SearchEndpoint
 
 bug fix in client http exception handling
 
-0.4.0 (2015-08-18)
+0.4.1 (2015-08-27)
 ++++++++++++++++++
 
 Additional services endpoint methods
