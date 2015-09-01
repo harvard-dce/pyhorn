@@ -1,5 +1,6 @@
 
 from base import Endpoint, EndpointObj
+from workflow import WorkflowEndpoint, Workflow
 from urlparse import urljoin
 from urllib import quote
 
@@ -55,6 +56,13 @@ class Mediapackage(EndpointObj):
     def tracks(self):
         return self._ref_property('tracks', path_key="media.track",
                                    class_=MediaTrack)
+
+    @property
+    def workflow(self):
+        return self._ref_property('workflow', endpoint_method=WorkflowEndpoint.instances,
+                                  endpoint_params={'mp': self.id},
+                                  class_=Workflow, single=True)
+
 
 class Episode(EndpointObj):
 

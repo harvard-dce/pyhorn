@@ -387,6 +387,22 @@ class TestEpisodes(EndpointTestCase):
         self.assertTrue(isinstance(tracks[0], MediaTrack))
         self.assertEqual(tracks[0].duration, 5)
 
+    def test_episode_mp_workflow(self):
+
+        wfs_data = json_fixture(response_data={
+            "workflows": {
+                "workflow": [
+                    { "id": "123456" },
+                ]
+            }
+        })
+        mp = Mediapackage({"id": "efgh-1234"}, self.c)
+
+        with HTTMock(wfs_data):
+            mp_wf = mp.workflow
+
+        self.assertEqual(mp_wf.id, '123456')
+
 class TestCaptureAgents(EndpointTestCase):
 
     def test_agents(self):
