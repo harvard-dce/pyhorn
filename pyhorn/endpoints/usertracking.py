@@ -1,4 +1,5 @@
 
+import arrow
 from base import Endpoint, EndpointObj
 from search import SearchEndpoint, SearchEpisode
 
@@ -37,3 +38,13 @@ class UserAction(EndpointObj):
                                    class_=SearchEpisode, single=True)
 
 
+    def is_live(self):
+        """
+        Assumes that the mediapackage.start would represent the start time of a
+         live recording. Therefore, if the creation of the user action occurs
+         prior to the start + the duration then it must be a live-viewing event
+        """
+        action_created = arrow.get(self.created)
+        mp_start = arrow.get(self.episode.mediapackage.start)
+        mp_duration_sec = int(self.episode.mediapackage.duration) / 1000
+        return action_created <= mp_start.replace(seconds=+mp_duration_sec)

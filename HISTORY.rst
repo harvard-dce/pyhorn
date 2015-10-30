@@ -49,3 +49,10 @@ Additional services endpoint methods
 Added request timeouts
 
 Unhandled http exceptions are now re-raised
+
+0.5.0 (2015-10-30)
+++++++++++++++++++
+
+* added is_live() method to UserAction
+* workflow is now a property Mediapackage objects
+

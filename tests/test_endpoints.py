@@ -15,7 +15,7 @@ from pyhorn import MHClient
 from pyhorn.endpoints import *
 from pyhorn.endpoints.base import *
 from httmock import urlmatch, HTTMock
-from mock import patch, Mock
+from mock import patch, Mock, PropertyMock
 from fixtures import json_fixture
 
 class EndpointTestCase(unittest.TestCase):
@@ -333,6 +333,25 @@ class TestUserTracking(EndpointTestCase):
         with HTTMock(ep_data):
             episode = ua.episode
         self.assertEqual(episode.id, "abcd-1234")
+
+    def test_is_live(self):
+
+        mock_mp = PropertyMock()
+        type(mock_mp).start = PropertyMock(return_value='2015-10-30T00:00:00-04:00')
+        type(mock_mp).duration = PropertyMock(return_value='3600000')
+        mock_ep = PropertyMock()
+        type(mock_ep).mediapackage = PropertyMock(return_value=mock_mp)
+
+        with patch.object(UserAction, 'episode', new_callable=PropertyMock, return_value=mock_ep):
+            ua = UserAction({
+                'created': '2015-10-30T00:30:00-04:00'
+            }, self.c)
+            self.assertTrue(ua.is_live())
+
+            ua = UserAction({
+                'created': '2015-10-30T01:30:00-04:00'
+            }, self.c)
+            self.assertFalse(ua.is_live())
 
 class TestEpisodes(EndpointTestCase):
 
