@@ -56,3 +56,7 @@ Unhandled http exceptions are now re-raised
 * added is_live() method to UserAction
 * workflow is now a property Mediapackage objects
 
+0.6.0 (2016-04-14)
+++++++++++++++++++
+
+* add new `includeDeleted` param for episode search

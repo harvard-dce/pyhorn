@@ -16,7 +16,10 @@ class SearchEndpoint(Endpoint):
             'sid': None,
             'limit': 10,
             'offset': 0,
-            'admin': True
+            'admin': True,
+            'includeDeleted': None,
+            'createdFrom': None,
+            'createdTo': None
         }
     }
 
