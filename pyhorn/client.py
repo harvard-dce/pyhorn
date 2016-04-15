@@ -8,13 +8,9 @@ import os
 import requests
 from requests.auth import HTTPDigestAuth
 from endpoints import *
+from endpoints.cache import EndpointCache
 from urlparse import urljoin
 from utils import default_headers
-
-_cache_type = 'memory'
-import requests_cache
-if not os.environ.get('TESTING'):
-    requests_cache.install_cache(backend=_cache_type)
 
 _default_timeout = 5
 _session = requests.Session()
@@ -45,12 +41,14 @@ def handle_http_exceptions(callbacks={}):
 
 class MHClient(object):
 
-    def __init__(self, base_url, user, passwd, timeout=None):
+    def __init__(self, base_url, user, passwd, timeout=None, cache_enabled=True):
         self.base_url = base_url
         self.user = user
         self.passwd = passwd
         self.timeout = timeout or _default_timeout
         self.default_headers = default_headers()
+        self.cache_enabled = cache_enabled
+        self.cache = EndpointCache()
 
     @handle_http_exceptions()
     def endpoints(self):
@@ -161,8 +159,7 @@ class MHClient(object):
                              )
         resp.raise_for_status()
 
-        # maybe we changed something so clear the cache
-        if hasattr(requests.Session(), 'cache'):
-            requests_cache.clear()
-
         return resp
+
+    def clear_cache(self):
+        self.cache.clear()

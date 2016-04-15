@@ -1,9 +1,4 @@
 
-import os
-import requests_cache
-
-os.environ['TESTING'] = 'True'
-
 import sys
 #if sys.version_info < (2,7):
 #    import unittest2 as unittest
@@ -14,8 +9,8 @@ import requests
 from pyhorn import MHClient
 from pyhorn.endpoints import *
 from pyhorn.endpoints.base import *
-from httmock import urlmatch, HTTMock
-from mock import patch, Mock, PropertyMock
+from httmock import HTTMock
+from mock import patch, PropertyMock
 from fixtures import json_fixture
 
 class EndpointTestCase(unittest.TestCase):
@@ -586,8 +581,7 @@ class TestServices(EndpointTestCase):
             self.assertEqual(host.services[0].type, "foo")
 
     @patch.object(requests.Session, 'post', autospec=True)
-    @patch.object(requests_cache, 'clear')
-    def test_service_host_maintenance(self, mock_clear, mock_post):
+    def test_service_host_maintenance(self, mock_post):
 
         host = ServiceHost({ 'base_url': 'http://foo.example.edu' }, self.c)
 

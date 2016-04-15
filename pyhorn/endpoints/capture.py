@@ -1,5 +1,6 @@
 
 from base import Endpoint, EndpointObj
+from cache import cached
 from urlparse import urljoin
 from urllib import quote
 
@@ -21,6 +22,7 @@ class CaptureEndpoint(Endpoint):
         return agents
 
     @classmethod
+    @cached(ttl=30)
     def agent(cls, client, agent_name):
         resp_data = client.get('/capture-admin/agents/%s.json' % agent_name)
         return resp_data['agent-state-update']

@@ -1,5 +1,4 @@
 import sys
-import requests_cache
 
 #if sys.version_info < (2,7):
 #    import unittest2 as unittest
@@ -9,12 +8,10 @@ import unittest
 from urlparse import urlparse, parse_qs
 from pyhorn import MHClient, MHClientHTTPError
 from httmock import all_requests, HTTMock
-from mock import patch
 
 class TestClient(unittest.TestCase):
 
     def test_init(self):
-        from requests.auth import HTTPDigestAuth
         c = MHClient('http://matterhorn.example.edu', 'user', 'passwd')
         self.assertEqual(c.base_url, 'http://matterhorn.example.edu')
         self.assertEqual(c.user, 'user')
@@ -39,8 +36,7 @@ class TestClient(unittest.TestCase):
             self.assertEqual(url_parts.path, '/foo')
             self.assertEqual(url_params['bar'], ['baz'])
 
-    @patch.object(requests_cache, 'clear')
-    def test_post(self, mock_clear):
+    def test_post(self):
         @all_requests
         def resp_content(url, request):
             return {'status_code': 200,
@@ -58,7 +54,6 @@ class TestClient(unittest.TestCase):
         self.assertEqual(resp_data['req_method'], 'POST')
         self.assertTrue('fud=False' in resp_data['req_body'])
         self.assertTrue('foo=1' in resp_data['req_body'])
-        self.assertTrue(mock_clear.called)
 
     def test_404_handling(self):
         @all_requests

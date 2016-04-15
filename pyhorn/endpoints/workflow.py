@@ -1,5 +1,6 @@
 
 from base import Endpoint, EndpointObj
+from cache import cached
 from urlparse import urljoin
 
 __all__ = ['WorkflowEndpoint', 'Workflow', 'WorkflowOperation']
@@ -42,6 +43,7 @@ class WorkflowEndpoint(Endpoint):
         return wfs
 
     @classmethod
+    @cached(ttl=60, max_entries=1000)
     def instance(cls, client, instance_id):
         instance_data = client.get('workflow/instance/%s.json' % str(instance_id))
         return instance_data['workflow']

@@ -1,5 +1,6 @@
 
 from base import Endpoint, EndpointObj
+from cache import cached
 from workflow import WorkflowEndpoint, Workflow
 from urlparse import urljoin
 from urllib import quote
@@ -38,6 +39,7 @@ class EpisodeEndpoint(Endpoint):
         return eps
 
     @classmethod
+    @cached(ttl=300, max_entries=1000)
     def episode(cls, client, episode_id):
         ep_search = EpisodeEndpoint.episodes(client, id=episode_id)
         if len(ep_search) == 0:

@@ -60,3 +60,9 @@ Unhandled http exceptions are now re-raised
 ++++++++++++++++++
 
 * add new `includeDeleted` param for episode search
+
+0.7.0 (2016-04-14)
+++++++++++++++++++
+
+* ripped out the braindead use of requests_cache
+* new per-endpoint method caching mechanism

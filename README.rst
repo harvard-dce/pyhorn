@@ -208,7 +208,7 @@ data structures contained in the original response.
 This works also for dereferencing data that requires an additional request to the
 Matterhorn API. For instance, Accessing the ``WorkflowOperation.job`` property
 triggers a request to the ``/services/job/{job_id}.json``, with the response
-being wrapped in a ``ServiceJob`` object, cached (of course) and returned.
+being wrapped in a ``ServiceJob`` object and returned.
 
 The current list of these dereferencing relationships is:
 
@@ -233,6 +233,29 @@ As of v0.4.0 you can toggle the maintenance mode on a host.
     >>> for host in hosts:
             host.set_maintenance(True)
 
+
+**Caching**
+
+As of v0.7.0 the use of requests_cache has been dropped in favor of an internal
+cache that stores the responses from a subset of the single-item endpoint
+methods. A future goal is to allow more granular control over the caching policy,
+but for now the following endpoint responses are cached:
+
+* CaptureEndpoint.agent
+* EpisodeEndpoint.episode
+* SearchEndpoint.episode
+* Workflow.instance
+
+Caching works via a decorator function on the endpoint methods. The JSON response
+data from the Matterhorn API is cached in-memory with each entry assigned a
+time-to-live (`ttl`) value to control expiration. Each cached method also has
+a configured `max_entries` value. If/when the number of entries reaches that
+limit a cull operation will prune 1/3 of the existing entries.
+
+To disable caching altogether pass `cache_enabled=False` to the `MHClient`
+constructor.
+
+To clear the cache call `client.clear_cache()`.
 
 Testing
 -------
