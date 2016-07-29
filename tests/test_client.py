@@ -17,6 +17,10 @@ class TestClient(unittest.TestCase):
         self.assertEqual(c.user, 'user')
         self.assertEqual(c.passwd, 'passwd')
 
+    def test_init_no_auth(self):
+        c = MHClient('http://matterhorn.example.edu')
+        self.assertIsNone(c._http_auth())
+
     def test_get(self):
         @all_requests
         def resp_content(url, request):
