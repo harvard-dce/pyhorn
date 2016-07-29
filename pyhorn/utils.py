@@ -39,12 +39,16 @@ def default_user_agent(name="pyhorn"):
                      '%s/%s' % (p_system, p_release)])
 
 
-def default_headers():
-    return {
+def default_headers(use_auth):
+    headers = {
         'User-Agent': default_user_agent(),
         'Accept-Encoding': ', '.join(('gzip', 'deflate')),
         'Accept': 'application/json',
         'Connection': 'keep-alive',
+    }
+    if use_auth:
+        headers.update({
         'X-REQUESTED-AUTH': 'Digest',
         'X-Opencast-Matterhorn-Authorization': 'true'
-    }
+        })
+    return headers

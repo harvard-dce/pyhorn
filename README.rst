@@ -67,7 +67,9 @@ Create the client interface...
 
 
 User/pass combo should be for your REST API user, typically the
-"matterhorn_system_account" user.
+"matterhorn_system_account" user. It is possible to create and use a client
+object without a user/pass combo (omit the constructor args), but requests
+will only work for endpoints that do not require auth (e.g., episode search)
 
 The default request timeout is 5 seconds. Pass `timeout=n` to the MHClient
 constructor to use something else.

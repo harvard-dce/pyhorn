@@ -41,12 +41,12 @@ def handle_http_exceptions(callbacks={}):
 
 class MHClient(object):
 
-    def __init__(self, base_url, user, passwd, timeout=None, cache_enabled=True):
+    def __init__(self, base_url, user=None, passwd=None, timeout=None, cache_enabled=True):
         self.base_url = base_url
         self.user = user
         self.passwd = passwd
         self.timeout = timeout or _default_timeout
-        self.default_headers = default_headers()
+        self.default_headers = default_headers(self.user and self.passwd)
         self.cache_enabled = cache_enabled
         self.cache = EndpointCache()
 
@@ -126,6 +126,10 @@ class MHClient(object):
         statistics_ = ServicesEndpoint.statistics(self)
         return ServiceStatistics(statistics_, self)
 
+    def _http_auth(self):
+        if self.user and self.passwd:
+            return HTTPDigestAuth(self.user, self.passwd)
+
     def get(self, path, params=None, extra_headers=None):
         headers = self.default_headers.copy()
 
@@ -133,11 +137,11 @@ class MHClient(object):
             headers.update(extra_headers)
 
         url = urljoin(self.base_url, path)
-        auth = HTTPDigestAuth(self.user, self.passwd)
+
         resp = _session.get(url,
                             params=params,
                             headers=headers,
-                            auth=auth,
+                            auth=self._http_auth(),
                             timeout=self.timeout
                             )
         resp.raise_for_status()
@@ -150,11 +154,11 @@ class MHClient(object):
             headers.update(extra_headers)
 
         url = urljoin(self.base_url, path)
-        auth = HTTPDigestAuth(self.user, self.passwd)
+
         resp = _session.post(url,
                              data=data,
                              headers=headers,
-                             auth=auth,
+                             auth=self._http_auth(),
                              timeout=self.timeout
                              )
         resp.raise_for_status()

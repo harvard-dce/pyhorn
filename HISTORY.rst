@@ -66,3 +66,9 @@ Unhandled http exceptions are now re-raised
 
 * ripped out the braindead use of requests_cache
 * new per-endpoint method caching mechanism
+
+0.8.0 (2016-07-29)
+++++++++++++++++++
+
+* allow client creation and usage without user/pass auth
+  (note: requests will fail for endpoints that require auth)
