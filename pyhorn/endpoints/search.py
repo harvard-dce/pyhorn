@@ -20,7 +20,8 @@ class SearchEndpoint(Endpoint):
             'admin': True,
             'includeDeleted': None,
             'createdFrom': None,
-            'createdTo': None
+            'createdTo': None,
+            'sort': None
         }
     }
 

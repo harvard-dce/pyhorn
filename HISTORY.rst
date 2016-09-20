@@ -72,3 +72,8 @@ Unhandled http exceptions are now re-raised
 
 * allow client creation and usage without user/pass auth
   (note: requests will fail for endpoints that require auth)
+
+0.8.1 (2016-09-20)
+++++++++++++++++++
+
+* SearchEpisode endpoint was missing `sort` param
