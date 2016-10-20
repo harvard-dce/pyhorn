@@ -167,3 +167,11 @@ class MHClient(object):
 
     def clear_cache(self):
         self.cache.clear()
+
+    def dump_cache(self, dump_path):
+        with open(dump_path, 'wb') as f:
+            self.cache.dump(f)
+
+    def restore_cache(self, dump_path):
+        with open(dump_path, 'rb') as f:
+            self.cache.load(f)

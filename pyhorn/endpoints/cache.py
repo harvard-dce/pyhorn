@@ -99,3 +99,14 @@ class EndpointCache(object):
         for method in methods:
             self._caches[method].clear()
             self._expire_info[method].clear()
+
+    def dump(self, file_obj):
+        pickle.dump(
+            { 'caches': self._caches, 'expire_info': self._expire_info},
+            file_obj
+        )
+
+    def load(self, file_obj):
+        data = pickle.load(file_obj)
+        self._caches = data['caches']
+        self._expire_info = data['expire_info']
