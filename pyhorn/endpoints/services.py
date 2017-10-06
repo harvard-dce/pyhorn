@@ -1,6 +1,11 @@
 
-from base import Endpoint, EndpointObj
-from urlparse import urljoin
+import six
+from .base import Endpoint, EndpointObj
+
+if six.PY3:
+    from urllib.parse import urljoin
+else:
+    from urlparse import urljoin
 
 __all__ = ['ServicesEndpoint', 'ServiceJob', 'ServiceHost',
            'ServiceStatistics', 'ServiceRegistration', 'ServiceStatEntry']

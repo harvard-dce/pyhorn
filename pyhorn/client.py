@@ -5,12 +5,17 @@ Defines the main API client class
 """
 
 import os
+import six
 import requests
 from requests.auth import HTTPDigestAuth
-from endpoints import *
-from endpoints.cache import EndpointCache
-from urlparse import urljoin
-from utils import default_headers
+from .endpoints import *
+from .endpoints.cache import EndpointCache
+from .utils import default_headers
+
+if six.PY3:
+    from urllib.parse import urljoin
+else:
+    from urlparse import urljoin
 
 _default_timeout = 5
 _session = requests.Session()
@@ -23,7 +28,7 @@ def handle_http_exceptions(callbacks={}):
         def newfunc(*args, **kwargs):
             try:
                 return f(*args, **kwargs)
-            except requests.HTTPError, e:
+            except requests.HTTPError as e:
                 resp = e.response
                 req = resp.request
                 if resp.status_code == 404:

@@ -77,3 +77,8 @@ Unhandled http exceptions are now re-raised
 ++++++++++++++++++
 
 * SearchEpisode endpoint was missing `sort` param
+
+0.9.0 (2018-08-29)
+++++++++++++++++++
+
+* Python 3 compatibility!

@@ -16,8 +16,8 @@ class Endpoint(object):
         """
         kwarg_map = cls._kwarg_map[method]
         params = {}
-        for param, default in kwarg_map.iteritems():
-            if kwargs.has_key(param):
+        for param, default in kwarg_map.items():
+            if param in kwargs:
                 # don't send empty params
                 if kwargs[param] is None:
                     continue
@@ -36,7 +36,7 @@ class Endpoint(object):
 class EndpointObj(object):
 
     def __init__(self, raw_data, client):
-        self._raw = dict((k.replace('-','_'), v) for k,v in raw_data.iteritems())
+        self._raw = dict((k.replace('-','_'), v) for k,v in raw_data.items())
         self._property_stash = {}
         self.client = client
 

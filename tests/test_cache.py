@@ -1,9 +1,14 @@
+import six
 import datetime
 import mock
 import pytest
 from freezegun import freeze_time
 from pyhorn.endpoints import cache, base
-import cPickle as pickle
+
+if six.PY3:
+    import pickle
+else:
+    import cPickle as pickle
 
 @pytest.mark.parametrize("args,kwargs,expected", [
     ([1], {'foo': 1}, ([1], frozenset(set([('foo', 1)])))),
@@ -100,7 +105,7 @@ def test_cache_get_expired(c):
         assert c.get('foo', 'bar') is None
 
 def test_cull(c):
-    for i in xrange(100):
+    for i in range(100):
         c.set('foo', str(i), i)
     assert len(c._caches['foo']) == 100
     c._cull('foo')

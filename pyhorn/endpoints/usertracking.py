@@ -1,7 +1,7 @@
 
 import arrow
-from base import Endpoint, EndpointObj
-from search import SearchEndpoint, SearchEpisode
+from .base import Endpoint, EndpointObj
+from .search import SearchEndpoint, SearchEpisode
 
 __all__ = ['UserTrackingEndpoint', 'UserAction']
 

@@ -1,5 +1,5 @@
 
-from base import Endpoint
+from .base import Endpoint
 
 __all__ = ['InfoEndpoint']
 
