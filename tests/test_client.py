@@ -1,11 +1,16 @@
 import sys
+import six
 
 if sys.version_info < (2,7):
     import unittest2 as unittest
 else:
     import unittest
 
-from urlparse import urlparse, parse_qs
+if six.PY3:
+    from urllib.parse import urlparse, parse_qs
+else:
+    from urlparse import urlparse, parse_qs
+
 from pyhorn import MHClient, MHClientHTTPError
 from httmock import all_requests, HTTMock
 

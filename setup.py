@@ -30,7 +30,7 @@ history = read('HISTORY.rst')
 version_file = read('pyhorn/__init__.py')
 version = re.search(r"^__version__ = ['\"]([^'\"]*)['\"]", version_file, re.M).group(1)
 
-install_requires = ["requests", "requests-cache", "arrow", "rwlock"]
+install_requires = ["requests", "requests-cache", "arrow", "rwlock", "six"]
 tests_require = ["pytest", "httmock", "mock", "freezegun"]
 
 setup(

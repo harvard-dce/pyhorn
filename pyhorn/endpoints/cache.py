@@ -1,8 +1,13 @@
+import six
 import time
 from rwlock import RWLock
 from functools import wraps
 from collections import defaultdict
-import cPickle as pickle
+
+if six.PY3:
+    import pickle
+else:
+    import cPickle as pickle
 
 DEFAULT_TTL = 300
 DEFAULT_MAX_ENTRIES = 3000
@@ -16,7 +21,7 @@ def cached(ttl=DEFAULT_TTL, max_entries=DEFAULT_MAX_ENTRIES):
                 return func(cls, client, *args, **kwargs)
 
             cache_key = _generate_cache_key(args, kwargs)
-            cache_name = cls.__name__ + '.' + func.func_name
+            cache_name = cls.__name__ + '.' + func.__name__
             res = client.cache.get(cache_name, cache_key)
 
             if res is None:

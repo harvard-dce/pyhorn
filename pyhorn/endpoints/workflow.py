@@ -1,7 +1,12 @@
 
-from base import Endpoint, EndpointObj
-from cache import cached
-from urlparse import urljoin
+import six
+from .base import Endpoint, EndpointObj
+from .cache import cached
+
+if six.PY3:
+    from urllib.parse import urljoin
+else:
+    from urlparse import urljoin
 
 __all__ = ['WorkflowEndpoint', 'Workflow', 'WorkflowOperation']
 
@@ -65,7 +70,7 @@ class WorkflowOperation(EndpointObj):
 
     @property
     def job(self):
-        from services import ServicesEndpoint, ServiceJob
+        from .services import ServicesEndpoint, ServiceJob
         if 'job' not in self._raw:
             return None
         return self._ref_property('job', endpoint_method=ServicesEndpoint.job,
@@ -128,7 +133,7 @@ class Workflow(EndpointObj):
                                   class_=Episode, single=True)
     @property
     def job(self):
-        from services import ServicesEndpoint, ServiceJob
+        from .services import ServicesEndpoint, ServiceJob
         return self._ref_property('job', endpoint_method=ServicesEndpoint.job,
                                   endpoint_params={'job_id': self._raw['id']},
                                   class_=ServiceJob, single=True)

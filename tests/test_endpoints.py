@@ -11,7 +11,7 @@ from pyhorn.endpoints import *
 from pyhorn.endpoints.base import *
 from httmock import HTTMock
 from mock import patch, PropertyMock
-from fixtures import json_fixture
+from .fixtures import json_fixture
 
 class EndpointTestCase(unittest.TestCase):
 

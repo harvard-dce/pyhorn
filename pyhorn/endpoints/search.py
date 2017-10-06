@@ -1,9 +1,14 @@
 
-from base import Endpoint
-from episode import Episode
-from cache import cached
-from urlparse import urljoin
-from urllib import quote
+import six
+from .base import Endpoint
+from .episode import Episode
+from .cache import cached
+
+if six.PY3:
+    from urllib.parse import urljoin, quote
+else:
+    from urllib import quote
+    from urlparse import urljoin
 
 __all__ = ['SearchEndpoint', 'SearchEpisode']
 
